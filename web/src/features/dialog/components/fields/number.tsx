@@ -27,13 +27,13 @@ const NumberField: React.FC<Props> = (props) => {
       onChange={controller.field.onChange}
       label={props.row.label}
       description={props.row.description}
-      defaultValue={props.row.default}
       min={props.row.min}
       max={props.row.max}
       step={props.row.step}
-      precision={props.row.precision}
+      decimalScale={props.row.precision}
+
       disabled={props.row.disabled}
-      icon={props.row.icon && <LibIcon icon={props.row.icon} fixedWidth />}
+      leftSection={props.row.icon && <LibIcon icon={props.row.icon} />}
       withAsterisk={props.row.required}
     />
   );

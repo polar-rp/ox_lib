@@ -1,56 +1,22 @@
-import React from 'react';
-import { Box, createStyles, Text } from '@mantine/core';
+import React, { useState } from 'react';
+import { Box, Text, useMantineTheme, rem } from '@mantine/core';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
 import { fetchNui } from '../../utils/fetchNui';
 import ScaleFade from '../../transitions/ScaleFade';
 import type { ProgressbarProps } from '../../typings';
 
-const useStyles = createStyles((theme) => ({
-  container: {
-    width: 350,
-    height: 45,
-    borderRadius: theme.radius.sm,
-    backgroundColor: theme.colors.dark[5],
-    overflow: 'hidden',
-  },
-  wrapper: {
-    width: '100%',
-    height: '20%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    bottom: 0,
-    position: 'absolute',
-  },
-  bar: {
-    height: '100%',
-    backgroundColor: theme.colors[theme.primaryColor][theme.fn.primaryShade()],
-  },
-  labelWrapper: {
-    position: 'absolute',
-    display: 'flex',
-    width: 350,
-    height: 45,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  label: {
-    maxWidth: 350,
-    padding: 8,
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    fontSize: 20,
-    color: theme.colors.gray[3],
-    textShadow: theme.shadows.sm,
-  },
-}));
+const progressBarAnimation = `
+  @keyframes progress-bar-fill {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
+`;
 
 const Progressbar: React.FC = () => {
-  const { classes } = useStyles();
-  const [visible, setVisible] = React.useState(false);
-  const [label, setLabel] = React.useState('');
-  const [duration, setDuration] = React.useState(0);
+  const [visible, setVisible] = useState(false);
+  const [label, setLabel] = useState('');
+  const [duration, setDuration] = useState(0);
+  const theme = useMantineTheme();
 
   useNuiEvent('progressCancel', () => setVisible(false));
 
@@ -62,19 +28,65 @@ const Progressbar: React.FC = () => {
 
   return (
     <>
-      <Box className={classes.wrapper}>
+      <style>{progressBarAnimation}</style>
+      <Box
+        style={{
+          width: '100%',
+          height: '20%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bottom: 0,
+          position: 'absolute',
+          pointerEvents: 'none',
+        }}
+      >
         <ScaleFade visible={visible} onExitComplete={() => fetchNui('progressComplete')}>
-          <Box className={classes.container}>
+          <Box
+            bg="dark.5"
+            style={{
+              width: rem(350),
+              height: rem(45),
+              borderRadius: theme.radius.sm,
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
             <Box
-              className={classes.bar}
               onAnimationEnd={() => setVisible(false)}
-              sx={{
-                animation: 'progress-bar linear',
+              style={{
+                height: '100%',
+                backgroundColor: theme.colors[theme.primaryColor][6],
+                animation: 'progress-bar-fill linear forwards',
                 animationDuration: `${duration}ms`,
               }}
             >
-              <Box className={classes.labelWrapper}>
-                <Text className={classes.label}>{label}</Text>
+              <Box
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  display: 'flex',
+                  width: rem(350),
+                  height: rem(45),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Text
+                  c="gray.3"
+                  style={{
+                    maxWidth: rem(350),
+                    padding: rem(8),
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    fontSize: rem(20),
+                    textShadow: theme.shadows.sm,
+                  }}
+                >
+                  {label}
+                </Text>
               </Box>
             </Box>
           </Box>

@@ -17,20 +17,34 @@ const TimeField: React.FC<Props> = (props) => {
     rules: { required: props.row.required },
   });
 
+  const formatValue = (value: any) => {
+    if (!value) return '';
+    const date = new Date(value);
+    return date.toISOString().substring(11, 16);
+  };
+
   return (
     <TimeInput
-      value={controller.field.value ? new Date(controller.field.value) : controller.field.value}
+      value={typeof controller.field.value === 'number' ? formatValue(controller.field.value) : controller.field.value}
       name={controller.field.name}
       ref={controller.field.ref}
       onBlur={controller.field.onBlur}
-      onChange={(date) => controller.field.onChange(date ? date.getTime() : null)}
+      onChange={(event) => {
+        const val = event.currentTarget.value;
+        if (!val) {
+          controller.field.onChange(null);
+          return;
+        }
+        const [hours, minutes] = val.split(':');
+        const date = new Date();
+        date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        controller.field.onChange(date.getTime());
+      }}
       label={props.row.label}
       description={props.row.description}
       disabled={props.row.disabled}
-      format={props.row.format || '12'}
       withAsterisk={props.row.required}
-      clearable={props.row.clearable}
-      icon={props.row.icon && <LibIcon fixedWidth icon={props.row.icon} />}
+      leftSection={props.row.icon && <LibIcon fixedWidth icon={props.row.icon} />}
     />
   );
 };

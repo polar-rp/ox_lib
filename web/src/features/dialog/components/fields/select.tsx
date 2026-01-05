@@ -17,45 +17,39 @@ const SelectField: React.FC<Props> = (props) => {
     rules: { required: props.row.required },
   });
 
+  const formattedData = props.row.options.map((opt) => ({
+    value: String(opt.value),
+    label: String(opt.label ?? opt.value),
+    disabled: 'disabled' in opt ? (opt as any).disabled : false,
+  }));
+
+  const commonProps = {
+    data: formattedData,
+    value: controller.field.value,
+    name: controller.field.name,
+    ref: controller.field.ref,
+    onBlur: controller.field.onBlur,
+    onChange: controller.field.onChange,
+    disabled: props.row.disabled,
+    label: props.row.label,
+    description: props.row.description,
+    withAsterisk: props.row.required,
+    clearable: props.row.clearable,
+    searchable: props.row.searchable,
+    leftSection: props.row.icon ? <LibIcon icon={props.row.icon} /> : null,
+  };
+
   return (
     <>
       {props.row.type === 'select' ? (
-        <Select
-          data={props.row.options}
-          value={controller.field.value}
-          name={controller.field.name}
-          ref={controller.field.ref}
-          onBlur={controller.field.onBlur}
-          onChange={controller.field.onChange}
-          disabled={props.row.disabled}
-          label={props.row.label}
-          description={props.row.description}
-          withAsterisk={props.row.required}
-          clearable={props.row.clearable}
-          searchable={props.row.searchable}
-          icon={props.row.icon && <LibIcon icon={props.row.icon} fixedWidth />}
-        />
+        <Select {...commonProps} />
       ) : (
-        <>
-          {props.row.type === 'multi-select' && (
-            <MultiSelect
-              data={props.row.options}
-              value={controller.field.value}
-              name={controller.field.name}
-              ref={controller.field.ref}
-              onBlur={controller.field.onBlur}
-              onChange={controller.field.onChange}
-              disabled={props.row.disabled}
-              label={props.row.label}
-              description={props.row.description}
-              withAsterisk={props.row.required}
-              clearable={props.row.clearable}
-              searchable={props.row.searchable}
-              maxSelectedValues={props.row.maxSelectedValues}
-              icon={props.row.icon && <LibIcon icon={props.row.icon} fixedWidth />}
-            />
-          )}
-        </>
+        props.row.type === 'multi-select' && (
+          <MultiSelect 
+            {...commonProps} 
+            maxValues={props.row.maxSelectedValues} 
+          />
+        )
       )}
     </>
   );

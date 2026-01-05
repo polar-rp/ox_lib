@@ -1,44 +1,40 @@
-import { Button, createStyles } from '@mantine/core';
+import { Button, useMantineTheme, rem } from '@mantine/core';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import LibIcon from '../../../../components/LibIcon';
 
 interface Props {
-  icon: IconProp;
+  leftSection: IconProp;
   canClose?: boolean;
   iconSize: number;
   handleClick: () => void;
 }
 
-const useStyles = createStyles((theme, params: { canClose?: boolean }) => ({
-  button: {
-    borderRadius: 4,
-    flex: '1 15%',
-    alignSelf: 'stretch',
-    height: 'auto',
-    textAlign: 'center',
-    justifyContent: 'center',
-    padding: 2,
-  },
-  root: {
-    border: 'none',
-  },
-  label: {
-    color: params.canClose === false ? theme.colors.dark[2] : theme.colors.dark[0],
-  },
-}));
-
-const HeaderButton: React.FC<Props> = ({ icon, canClose, iconSize, handleClick }) => {
-  const { classes } = useStyles({ canClose });
+const HeaderButton: React.FC<Props> = ({ leftSection, canClose, iconSize, handleClick }) => {
+  const theme = useMantineTheme();
 
   return (
     <Button
       variant="default"
-      className={classes.button}
-      classNames={{ label: classes.label, root: classes.root }}
       disabled={canClose === false}
       onClick={handleClick}
+      styles={{
+        root: {
+          border: 'none',
+          borderRadius: rem(4),
+          flex: '1 15%',
+          alignSelf: 'stretch',
+          height: 'auto',
+          padding: rem(2),
+        },
+        inner: {
+          justifyContent: 'center',
+        },
+        label: {
+          color: canClose === false ? theme.colors.dark[2] : theme.colors.dark[0],
+        },
+      }}
     >
-      <LibIcon icon={icon} fontSize={iconSize} fixedWidth />
+      <LibIcon icon={leftSection} fontSize={iconSize} />
     </Button>
   );
 };

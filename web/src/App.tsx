@@ -1,3 +1,6 @@
+import React from 'react';
+import '@mantine/core/styles.css'; 
+
 import Notifications from './features/notifications/NotificationWrapper';
 import CircleProgressbar from './features/progress/CircleProgressbar';
 import Progressbar from './features/progress/Progressbar';
@@ -24,10 +27,12 @@ const App: React.FC = () => {
     setClipboard(data);
   });
 
-  fetchNui('init');
+  React.useEffect(() => {
+    fetchNui('init');
+  }, []);
 
   return (
-    <MantineProvider withNormalizeCSS withGlobalStyles theme={{ ...theme, ...config }}>
+    <MantineProvider theme={{ ...theme, ...config }} defaultColorScheme="dark">
       <Progressbar />
       <CircleProgressbar />
       <Notifications />

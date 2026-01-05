@@ -1,7 +1,7 @@
 import { IDateInput } from '../../../../typings/dialog';
 import { Control, useController } from 'react-hook-form';
 import { FormValues } from '../../InputDialog';
-import { DatePicker, DateRangePicker } from '@mantine/dates';
+import { DatePickerInput, DateValue, DatesRangeValue } from '@mantine/dates';
 import LibIcon from '../../../../components/LibIcon';
 
 interface Props {
@@ -9,6 +9,12 @@ interface Props {
   index: number;
   control: Control<FormValues>;
 }
+
+const dateValueToTimestamp = (date: DateValue): number | null => {
+  if (!date) return null;
+  if (typeof date === 'string') return new Date(date).getTime();
+  return date.getTime();
+};
 
 const DateField: React.FC<Props> = (props) => {
   const controller = useController({
@@ -20,48 +26,49 @@ const DateField: React.FC<Props> = (props) => {
   return (
     <>
       {props.row.type === 'date' && (
-        <DatePicker
-          value={controller.field.value ? new Date(controller.field.value) : controller.field.value}
-          name={controller.field.name}
+        <DatePickerInput
+          type="default"
+          value={controller.field.value ? new Date(controller.field.value) : null}
           ref={controller.field.ref}
           onBlur={controller.field.onBlur}
-          // Workaround to use timestamp instead of Date object in values
-          onChange={(date) => controller.field.onChange(date ? date.getTime() : null)}
+          onChange={(date) => controller.field.onChange(dateValueToTimestamp(date))}
           label={props.row.label}
           description={props.row.description}
           placeholder={props.row.format}
           disabled={props.row.disabled}
-          inputFormat={props.row.format}
+          valueFormat={props.row.format}
           withAsterisk={props.row.required}
           clearable={props.row.clearable}
-          icon={props.row.icon && <LibIcon fixedWidth icon={props.row.icon} />}
+          leftSection={props.row.icon && <LibIcon fixedWidth icon={props.row.icon} />}
           minDate={props.row.min ? new Date(props.row.min) : undefined}
           maxDate={props.row.max ? new Date(props.row.max) : undefined}
         />
       )}
       {props.row.type === 'date-range' && (
-        <DateRangePicker
+        <DatePickerInput
+          type="range"
           value={
-            controller.field.value
-              ? controller.field.value[0]
-                ? controller.field.value.map((date: Date) => new Date(date))
-                : controller.field.value
-              : controller.field.value
+            controller.field.value && Array.isArray(controller.field.value) && controller.field.value[0]
+              ? (controller.field.value.map((date: number) => new Date(date)) as [Date, Date])
+              : [null, null]
           }
-          name={controller.field.name}
           ref={controller.field.ref}
           onBlur={controller.field.onBlur}
-          onChange={(dates) =>
-            controller.field.onChange(dates.map((date: Date | null) => (date ? date.getTime() : null)))
-          }
+          onChange={(dates: DatesRangeValue) => {
+            if (dates && Array.isArray(dates)) {
+              controller.field.onChange(dates.map(dateValueToTimestamp));
+            } else {
+              controller.field.onChange(null);
+            }
+          }}
           label={props.row.label}
           description={props.row.description}
           placeholder={props.row.format}
           disabled={props.row.disabled}
-          inputFormat={props.row.format}
+          valueFormat={props.row.format}
           withAsterisk={props.row.required}
           clearable={props.row.clearable}
-          icon={props.row.icon && <LibIcon fixedWidth icon={props.row.icon} />}
+          leftSection={props.row.icon && <LibIcon icon={props.row.icon} />}
           minDate={props.row.min ? new Date(props.row.min) : undefined}
           maxDate={props.row.max ? new Date(props.row.max) : undefined}
         />

@@ -1,28 +1,35 @@
-import { Checkbox, createStyles } from '@mantine/core';
-
-const useStyles = createStyles((theme) => ({
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  input: {
-    backgroundColor: theme.colors.dark[7],
-    '&:checked': { backgroundColor: theme.colors.dark[2], borderColor: theme.colors.dark[2] },
-  },
-  inner: {
-    '> svg > path': {
-      fill: theme.colors.dark[6],
-    },
-  },
-}));
+import React from 'react';
+import { Checkbox, useMantineTheme } from '@mantine/core';
 
 const CustomCheckbox: React.FC<{ checked: boolean }> = ({ checked }) => {
-  const { classes } = useStyles();
+  const theme = useMantineTheme();
+
   return (
     <Checkbox
       checked={checked}
       size="md"
-      classNames={{ root: classes.root, input: classes.input, inner: classes.inner }}
+      readOnly
+      styles={{
+        root: {
+          display: 'flex',
+          alignItems: 'center',
+        },
+        input: {
+          backgroundColor: theme.colors.dark[7],
+          borderColor: theme.colors.dark[4],
+          
+          '&:checked': {
+            backgroundColor: theme.colors.dark[2],
+            borderColor: theme.colors.dark[2],
+            '--checkbox-icon-color': theme.colors.dark[6],
+          },
+        },
+        inner: {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+      }}
     />
   );
 };

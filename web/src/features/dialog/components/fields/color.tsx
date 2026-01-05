@@ -32,7 +32,7 @@ const ColorField: React.FC<Props> = (props) => {
       defaultValue={props.row.default}
       format={props.row.format}
       withAsterisk={props.row.required}
-      icon={props.row.icon && <LibIcon icon={props.row.icon} fixedWidth />}
+      leftSection={props.row.icon && <LibIcon icon={props.row.icon} fixedWidth />}
     />
   );
 };

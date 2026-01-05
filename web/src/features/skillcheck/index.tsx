@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo } from 'react';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
 import Indicator from './indicator';
 import { fetchNui } from '../../utils/fetchNui';
-import { Box, createStyles } from '@mantine/core';
+import { Box, useMantineTheme, rem } from '@mantine/core';
 import type { GameDifficulty, SkillCheckProps } from '../../typings';
 
 export const circleCircumference = 2 * 50 * Math.PI;
@@ -15,96 +15,22 @@ const difficultyOffsets = {
   hard: 25,
 };
 
-const useStyles = createStyles((theme, params: { difficultyOffset: number }) => ({
-  svg: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    r: 50,
-    width: 500,
-    height: 500,
-  },
-  track: {
-    fill: 'transparent',
-    stroke: theme.colors.dark[5],
-    strokeWidth: 8,
-    r: 50,
-    cx: 250,
-    cy: 250,
-    strokeDasharray: circleCircumference,
-    '@media (min-height: 1440px)': {
-      strokeWidth: 10,
-      r: 65,
-      strokeDasharray: 2 * 65 * Math.PI,
-    },
-  },
-  skillArea: {
-    fill: 'transparent',
-    stroke: theme.fn.primaryColor(),
-    strokeWidth: 8,
-    r: 50,
-    cx: 250,
-    cy: 250,
-    strokeDasharray: circleCircumference,
-    strokeDashoffset: circleCircumference - (Math.PI * 50 * params.difficultyOffset) / 180,
-    '@media (min-height: 1440px)': {
-      strokeWidth: 10,
-      r: 65,
-      strokeDasharray: 2 * 65 * Math.PI,
-      strokeDashoffset: 2 * 65 * Math.PI - (Math.PI * 65 * params.difficultyOffset) / 180,
-    },
-  },
-  indicator: {
-    stroke: 'red',
-    strokeWidth: 16,
-    fill: 'transparent',
-    r: 50,
-    cx: 250,
-    cy: 250,
-    strokeDasharray: circleCircumference,
-    strokeDashoffset: circleCircumference - 3,
-    '@media (min-height: 1440px)': {
-      strokeWidth: 18,
-      r: 65,
-      strokeDasharray: 2 * 65 * Math.PI,
-      strokeDashoffset: 2 * 65 * Math.PI - 5,
-    },
-  },
-  button: {
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: theme.colors.dark[5],
-    width: 25,
-    height: 25,
-    textAlign: 'center',
-    borderRadius: 5,
-    fontSize: 16,
-    fontWeight: 500,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '@media (min-height: 1440px)': {
-      width: 30,
-      height: 30,
-      fontSize: 22,
-    },
-  },
-}));
-
 const SkillCheck: React.FC = () => {
+  const theme = useMantineTheme();
   const [visible, setVisible] = useState(false);
   const dataRef = useRef<{ difficulty: GameDifficulty | GameDifficulty[]; inputs?: string[] } | null>(null);
   const dataIndexRef = useRef<number>(0);
+  
   const [skillCheck, setSkillCheck] = useState<SkillCheckProps>({
     angle: 0,
     difficultyOffset: 50,
     difficulty: 'easy',
     key: 'e',
   });
-  const { classes } = useStyles({ difficultyOffset: skillCheck.difficultyOffset });
+
+  const skillAreaOffset = useMemo(() => {
+    return circleCircumference - (Math.PI * 50 * skillCheck.difficultyOffset) / 180;
+  }, [skillCheck.difficultyOffset]);
 
   useNuiEvent('startSkillCheck', (data: { difficulty: GameDifficulty | GameDifficulty[]; inputs?: string[] }) => {
     dataRef.current = data;
@@ -112,6 +38,7 @@ const SkillCheck: React.FC = () => {
     const gameData = Array.isArray(data.difficulty) ? data.difficulty[0] : data.difficulty;
     const offset = typeof gameData === 'object' ? gameData.areaSize : difficultyOffsets[gameData];
     const randomKey = data.inputs ? data.inputs[Math.floor(Math.random() * data.inputs.length)] : 'e';
+    
     setSkillCheck({
       angle: -90 + getRandomAngle(120, 360 - offset),
       difficultyOffset: offset,
@@ -146,6 +73,7 @@ const SkillCheck: React.FC = () => {
       ? dataRef.current.inputs[Math.floor(Math.random() * dataRef.current.inputs.length)]
       : 'e';
     const offset = typeof data === 'object' ? data.areaSize : difficultyOffsets[data];
+    
     setSkillCheck((prev) => ({
       ...prev,
       angle: -90 + getRandomAngle(120, 360 - offset),
@@ -155,34 +83,112 @@ const SkillCheck: React.FC = () => {
     }));
   };
 
+  const responsiveStyles = {
+    '--sc-size': '500px',
+    '--sc-r': '50',
+    '--sc-sw': '8',
+    '--sc-offset': skillAreaOffset,
+    '--sc-circum': circleCircumference,
+    
+    '@media (min-height: 1440px)': {
+      '--sc-r': '65',
+      '--sc-sw': '10',
+      '--sc-circum': 2 * 65 * Math.PI,
+      '--sc-offset': 2 * 65 * Math.PI - (Math.PI * 65 * skillCheck.difficultyOffset) / 180,
+    }
+  } as any;
+
   return (
     <>
       {visible && (
-        <>
-          <svg className={classes.svg}>
-            {/*Circle track*/}
-            <circle className={classes.track} />
-            {/*SkillCheck area*/}
-            <circle transform={`rotate(${skillCheck.angle}, 250, 250)`} className={classes.skillArea} />
+        <Box style={{ position: 'relative', width: '100vw', height: '100vh', pointerEvents: 'none' }}>
+          <svg
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: rem(500),
+              height: rem(500),
+              ...responsiveStyles
+            }}
+          >
+            <circle
+              cx="250"
+              cy="250"
+              fill="transparent"
+              stroke={theme.colors.dark[5]}
+              style={{
+                r: 'var(--sc-r)',
+                strokeWidth: 'var(--sc-sw)',
+                strokeDasharray: 'var(--sc-circum)',
+              }}
+            />
+            
+            <circle
+              cx="250"
+              cy="250"
+              fill="transparent"
+              stroke={theme.colors[theme.primaryColor][6]}
+              transform={`rotate(${skillCheck.angle}, 250, 250)`}
+              style={{
+                r: 'var(--sc-r)',
+                strokeWidth: 'var(--sc-sw)',
+                strokeDasharray: 'var(--sc-circum)',
+                strokeDashoffset: 'var(--sc-offset)',
+              }}
+            />
+            
             <Indicator
               angle={skillCheck.angle}
               offset={skillCheck.difficultyOffset}
               multiplier={
-                skillCheck.difficulty === 'easy'
-                  ? 1
-                  : skillCheck.difficulty === 'medium'
-                  ? 1.5
-                  : skillCheck.difficulty === 'hard'
-                  ? 1.75
-                  : skillCheck.difficulty.speedMultiplier
+                skillCheck.difficulty === 'easy' ? 1 :
+                skillCheck.difficulty === 'medium' ? 1.5 :
+                skillCheck.difficulty === 'hard' ? 1.75 :
+                (skillCheck.difficulty as any).speedMultiplier
               }
               handleComplete={handleComplete}
-              className={classes.indicator}
               skillCheck={skillCheck}
+              style={{
+                stroke: 'red',
+                fill: 'transparent',
+                r: 'var(--sc-r)',
+                cx: '250',
+                cy: '250',
+                strokeWidth: 'calc(var(--sc-sw) * 2)',
+                strokeDasharray: 'var(--sc-circum)',
+                strokeDashoffset: 'calc(var(--sc-circum) - 3)',
+              }}
             />
           </svg>
-          <Box className={classes.button}>{skillCheck.key.toUpperCase()}</Box>
-        </>
+
+          <Box
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: theme.colors.dark[5],
+              width: rem(25),
+              height: rem(25),
+              borderRadius: rem(5),
+              fontSize: rem(16),
+              fontWeight: 500,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              color: theme.white,
+              '@media (min-height: 1440px)': {
+                width: rem(30),
+                height: rem(30),
+                fontSize: rem(22),
+              }
+            } as any}
+          >
+            {skillCheck.key.toUpperCase()}
+          </Box>
+        </Box>
       )}
     </>
   );

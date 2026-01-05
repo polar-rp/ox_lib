@@ -2,19 +2,19 @@ import { NotificationProps } from '../../../typings';
 import { debugData } from '../../../utils/debugData';
 
 export const debugCustomNotification = () => {
-  debugData<NotificationProps>([
+ debugData<NotificationProps>([
     {
       action: 'notify',
       data: {
-        title: 'Success',
-        description: 'Notification description',
-        type: 'success',
-        id: 'pogchamp',
-        duration: 20000,
+        title: 'System Update',
+        description: 'New firmware is available for your **Microchip** interface.',
+        type: 'info',
+        id: 'debug-1',
+        duration: 5000,
+        icon: 'microchip',
+        iconAnimation: 'spin',
         style: {
-          '.description': {
-            color: 'red',
-          },
+          borderLeft: '4px solid #00b0c7',
         },
       },
     },

@@ -9,10 +9,10 @@
     "@fortawesome/free-brands-svg-icons": "^6.3.0",
     "@fortawesome/free-regular-svg-icons": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
-    "@fortawesome/react-fontawesome": "^0.1.19",
-    "@mantine/core": "^5.10.0",
-    "@mantine/dates": "^5.10.0",
-    "@mantine/hooks": "^5.10.0",
+    "@fortawesome/react-fontawesome": "^3.1.1",
+    "@mantine/core": "^8.3.11",
+    "@mantine/dates": "^8.3.11",
+    "@mantine/hooks": "^8.3.11",
     "@vitejs/plugin-react": "^4.2.0",
     "dayjs": "^1.11.7",
     "focus-trap-react": "^9.0.2",
@@ -25,7 +25,6 @@
     "react-markdown": "^8.0.1",
     "remark-gfm": "^3.0.1",
     "tinycolor2": "^1.6.0",
-    "typescript": "^4.6.3",
     "vite": "^5.1.8",
     "web-vitals": "^2.1.4"
   },
@@ -48,7 +47,8 @@
     "csstype": "^3.0.10",
     "postcss": "^8.4.31",
     "prop-types": "^15.8.1",
-    "rimraf": "^3.0.2"
+    "rimraf": "^4.4.1",
+    "typescript": "^5.9.3"
   },
   "patchedDependencies": {
     "react-hot-toast@2.5.2": "patches/react-hot-toast@2.5.2.patch"

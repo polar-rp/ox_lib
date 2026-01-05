@@ -1,0 +1,59 @@
+.wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.sector {
+  fill: var(--mantine-color-dark-6);
+  transition: fill 0.2s ease;
+  cursor: pointer;
+}
+
+.sector:hover {
+  fill: var(--mantine-primary-color-filled);
+}
+
+.sector:hover path,
+.sector:hover text,
+.sector:hover :global(.fa-icon) {
+  color: var(--mantine-color-white);
+}
+
+.sectorText {
+  fill: var(--mantine-color-dark-0);
+  stroke-width: 0;
+  pointer-events: none;
+}
+
+.backgroundCircle {
+  fill: var(--mantine-color-dark-6);
+}
+
+.centerCircle {
+  fill: var(--mantine-primary-color-filled);
+  stroke: var(--mantine-color-dark-6);
+  stroke-width: 4;
+  transition: fill 0.2s ease;
+  cursor: pointer;
+}
+
+.centerCircle:hover {
+  fill: var(--mantine-primary-color-filled-hover);
+}
+
+.centerIconContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.centerIcon {
+  color: var(--mantine-color-white);
+}

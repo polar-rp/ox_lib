@@ -1,31 +1,33 @@
-import { Box, createStyles, Text } from '@mantine/core';
 import React from 'react';
+import { Box, Text, rem } from '@mantine/core';
 
-const useStyles = createStyles((theme) => ({
-  container: {
-    textAlign: 'center',
-    borderTopLeftRadius: theme.radius.md,
-    borderTopRightRadius: theme.radius.md,
-    backgroundColor: theme.colors.dark[6],
-    height: 60,
-    width: 384,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  heading: {
-    fontSize: 24,
-    textTransform: 'uppercase',
-    fontWeight: 500,
-  },
-}));
+interface HeaderProps {
+  title: string;
+}
 
-const Header: React.FC<{ title: string }> = ({ title }) => {
-  const { classes } = useStyles();
-
+const Header: React.FC<HeaderProps> = ({ title }) => {
   return (
-    <Box className={classes.container}>
-      <Text className={classes.heading}>{title}</Text>
+    <Box
+      h={60}
+      w={384}
+      display="flex"
+      style={{
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderTopLeftRadius: 'var(--mantine-radius-md)',
+        borderTopRightRadius: 'var(--mantine-radius-md)',
+      }}
+      bg="dark.6"
+    >
+      <Text
+        component="h1"
+        size={rem(24)}
+        fw={500}
+        tt="uppercase"
+        ta="center"
+      >
+        {title}
+      </Text>
     </Box>
   );
 };

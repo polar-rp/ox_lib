@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
-import { Box, createStyles, Group } from '@mantine/core';
+import { Box, Group, useMantineTheme, rem } from '@mantine/core';
 import ReactMarkdown from 'react-markdown';
 import ScaleFade from '../../transitions/ScaleFade';
 import remarkGfm from 'remark-gfm';
@@ -8,73 +8,89 @@ import type { TextUiPosition, TextUiProps } from '../../typings';
 import MarkdownComponents from '../../config/MarkdownComponents';
 import LibIcon from '../../components/LibIcon';
 
-const useStyles = createStyles((theme, params: { position?: TextUiPosition }) => ({
-  wrapper: {
-    height: '100%',
-    width: '100%',
-    position: 'absolute',
-    display: 'flex',
-    alignItems: 
-      params.position === 'top-center' ? 'baseline' :
-      params.position === 'bottom-center' ? 'flex-end' : 'center',
-    justifyContent: 
-      params.position === 'right-center' ? 'flex-end' :
-      params.position === 'left-center' ? 'flex-start' : 'center',
-  },
-  container: {
-    fontSize: 16,
-    padding: 12,
-    margin: 8,
-    backgroundColor: theme.colors.dark[6],
-    color: theme.colors.dark[0],
-    fontFamily: 'Roboto',
-    borderRadius: theme.radius.sm,
-    boxShadow: theme.shadows.sm,
-  },
-}));
-
 const TextUI: React.FC = () => {
-  const [data, setData] = React.useState<TextUiProps>({
+  const theme = useMantineTheme();
+  const [data, setData] = useState<TextUiProps>({
     text: '',
     position: 'right-center',
   });
-  const [visible, setVisible] = React.useState(false);
-  const { classes } = useStyles({ position: data.position });
+  const [visible, setVisible] = useState(false);
 
-  useNuiEvent<TextUiProps>('textUi', (data) => {
-    if (!data.position) data.position = 'right-center'; // Default right position
-    setData(data);
+  useNuiEvent<TextUiProps>('textUi', (newData) => {
+    const position = newData.position || 'right-center';
+    setData({ ...newData, position });
     setVisible(true);
   });
 
   useNuiEvent('textUiHide', () => setVisible(false));
 
+  const getFlexStyles = (pos?: TextUiPosition) => {
+    switch (pos) {
+      case 'top-center':
+        return { alignItems: 'flex-start', justifyContent: 'center' };
+      case 'bottom-center':
+        return { alignItems: 'flex-end', justifyContent: 'center' };
+      case 'left-center':
+        return { alignItems: 'center', justifyContent: 'flex-start' };
+      case 'right-center':
+        return { alignItems: 'center', justifyContent: 'flex-end' };
+      default:
+        return { alignItems: 'center', justifyContent: 'center' };
+    }
+  };
+
   return (
-    <>
-      <Box className={classes.wrapper}>
-        <ScaleFade visible={visible}>
-          <Box style={data.style} className={classes.container}>
-            <Group spacing={12}>
-              {data.icon && (
-                <LibIcon
-                  icon={data.icon}
-                  fixedWidth
-                  size="lg"
-                  animation={data.iconAnimation}
-                  style={{
-                    color: data.iconColor,
-                    alignSelf: !data.alignIcon || data.alignIcon === 'center' ? 'center' : 'start',
-                  }}
-                />
-              )}
-              <ReactMarkdown components={MarkdownComponents} remarkPlugins={[remarkGfm]}>
+    <Box
+      style={{
+        height: '100vh',
+        width: '100vw',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        display: 'flex',
+        pointerEvents: 'none',
+        ...getFlexStyles(data.position),
+      }}
+    >
+      <ScaleFade visible={visible}>
+        <Box
+          style={{
+            fontSize: rem(16),
+            padding: rem(12),
+            margin: rem(8),
+            backgroundColor: theme.colors.dark[6],
+            color: theme.colors.dark[0],
+            fontFamily: 'Roboto, sans-serif',
+            borderRadius: theme.radius.sm,
+            boxShadow: theme.shadows.sm,
+            pointerEvents: 'all',
+            ...data.style,
+          }}
+        >
+          <Group gap={12} wrap="nowrap">
+            {data.icon && (
+              <LibIcon
+                icon={data.icon}
+                size="lg"
+                animation={data.iconAnimation}
+                style={{
+                  color: data.iconColor,
+                  alignSelf: !data.alignIcon || data.alignIcon === 'center' ? 'center' : 'start',
+                }}
+              />
+            )}
+            <Box style={{ lineHeight: 1.4 }}>
+              <ReactMarkdown 
+                components={MarkdownComponents} 
+                remarkPlugins={[remarkGfm]}
+              >
                 {data.text}
               </ReactMarkdown>
-            </Group>
-          </Box>
-        </ScaleFade>
-      </Box>
-    </>
+            </Box>
+          </Group>
+        </Box>
+      </ScaleFade>
+    </Box>
   );
 };
 
