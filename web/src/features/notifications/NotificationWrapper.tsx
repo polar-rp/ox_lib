@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Group, Stack, Text, ThemeIcon, Paper, Progress } from '@mantine/core';
+import { Box, Group, Stack, Text, ThemeIcon, Paper, Progress, rem } from '@mantine/core';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
 import { toast, Toaster } from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
@@ -17,13 +17,15 @@ const progressShrink = `
 `;
 
 const Notifications: React.FC = () => {
-
   useNuiEvent<NotificationProps>('notify', (data) => {
     if (!data.title && !data.description) return;
 
     const toastId = data.id?.toString();
     const duration = data.duration || 3000;
-    const position = (data.position || 'top-right').replace('top', 'top-center').replace('bottom', 'bottom-center');
+    
+    let position = data.position || 'top-right';
+    if (position === 'top') position = 'top-center';
+    if (position === 'bottom') position = 'bottom-center';
 
     const types = { error: 'red.6', success: 'teal.6', warning: 'yellow.6' };
     const iconColor = data.iconColor ? tinycolor(data.iconColor).toRgbString() : (types[data.type as keyof typeof types] || 'blue.6');
@@ -34,14 +36,17 @@ const Notifications: React.FC = () => {
         <Paper
           withBorder
           shadow="md"
-          w={340}
           style={{
             opacity: t.visible ? 1 : 0,
-            transform: t.visible ? 'scale(1)' : 'scale(0.9)',
-            transition: 'all 0.2s ease',
+            transform: t.visible 
+              ? 'translateY(0)' 
+              : position.includes('top') ? 'translateY(-20px)' : 'translateY(20px)',
+            transition: 'all 0.2s ease-in-out',
+            width: rem(340),
             overflow: 'hidden',
             position: 'relative',
             pointerEvents: 'all',
+
           }}
         >
           <style>{progressShrink}</style>
@@ -56,18 +61,22 @@ const Notifications: React.FC = () => {
               <LibIcon icon={finalIcon} size="lg" />
             </ThemeIcon>
 
-            <Stack gap={2} flex={1}>
+            <Stack gap={2} style={{ flex: 1 }}>
               {data.title && (
                 <Text fw={700} size="sm" c="white" lh="sm">
                   {data.title}
                 </Text>
               )}
               {data.description && (
-                <Text size="xs" c="gray.4" lh="1.4">
+                <Box style={{ 
+                  fontSize: data.title ? rem(13) : rem(14), 
+                  color: 'var(--mantine-color-gray-4)',
+                  lineHeight: 1.4 
+                }}>
                   <ReactMarkdown components={MarkdownComponents}>
                     {data.description}
                   </ReactMarkdown>
-                </Text>
+                </Box>
               )}
             </Stack>
           </Group>
