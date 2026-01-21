@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Text, useMantineTheme, rem } from '@mantine/core';
+import { Box, Text, useMantineTheme, rem, Paper, Progress, Stack } from '@mantine/core';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
 import { fetchNui } from '../../utils/fetchNui';
 import ScaleFade from '../../transitions/ScaleFade';
@@ -36,60 +36,45 @@ const Progressbar: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          bottom: 0,
+          bottom: rem(40),
           position: 'absolute',
           pointerEvents: 'none',
         }}
       >
         <ScaleFade visible={visible} onExitComplete={() => fetchNui('progressComplete')}>
-          <Box
-            bg="dark.5"
-            style={{
-              width: rem(350),
-              height: rem(45),
-              borderRadius: theme.radius.sm,
-              overflow: 'hidden',
-              position: 'relative',
-            }}
+          <Paper
+            p="sm"
+            withBorder
+            shadow="xl"
+            w={320}
           >
-            <Box
-              onAnimationEnd={() => setVisible(false)}
-              style={{
-                height: '100%',
-                backgroundColor: theme.colors[theme.primaryColor][6],
-                animation: 'progress-bar-fill linear forwards',
-                animationDuration: `${duration}ms`,
-              }}
-            >
-              <Box
+            <Stack gap={8}>
+              <Text
+                size="sm"
+                fw={600}
+                ta="center"
                 style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  display: 'flex',
-                  width: rem(350),
-                  height: rem(45),
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  letterSpacing: rem(1),
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                 }}
               >
-                <Text
-                  c="gray.3"
-                  style={{
-                    maxWidth: rem(350),
-                    padding: rem(8),
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                    whiteSpace: 'nowrap',
-                    fontSize: rem(20),
-                    textShadow: theme.shadows.sm,
-                  }}
-                >
-                  {label}
-                </Text>
-              </Box>
-            </Box>
-          </Box>
+                {label}
+              </Text>
+
+              <Progress
+                value={100}
+                size="lg"
+                onAnimationEnd={() => setVisible(false)}
+                styles={{
+                  section: {
+                    animation: visible ? `progress-bar-fill ${duration}ms linear forwards` : 'none',
+                  },
+                }}
+              />
+            </Stack>
+          </Paper>
         </ScaleFade>
       </Box>
     </>
