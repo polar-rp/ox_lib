@@ -14,6 +14,7 @@
 ---@field id? string
 ---@field title? string
 ---@field description? string
+---@field itemImage? string
 ---@field duration? number
 ---@field showDuration? boolean
 ---@field position? NotificationPosition

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Group, Stack, Text, ThemeIcon, Paper, Progress, rem } from '@mantine/core';
+import { Box, Group, Stack, Text, ThemeIcon, Paper, Progress, rem, Avatar } from '@mantine/core';
 import { useNuiEvent } from '../../hooks/useNuiEvent';
 import { toast, Toaster } from 'react-hot-toast';
 import ReactMarkdown from 'react-markdown';
@@ -8,6 +8,7 @@ import tinycolor from 'tinycolor2';
 import type { NotificationProps } from '../../typings';
 import MarkdownComponents from '../../config/MarkdownComponents';
 import LibIcon from '../../components/LibIcon';
+import { getItemImageUrl } from '../../utils/misc';
 
 const progressShrink = `
   @keyframes progress-shrink {
@@ -52,14 +53,21 @@ const Notifications: React.FC = () => {
           <style>{progressShrink}</style>
           
           <Group p="sm" align="start" wrap="nowrap" gap="md">
-            <ThemeIcon 
-              color={iconColor} 
-              variant="light" 
-              size={38} 
-              radius="md"
-            >
-              <LibIcon icon={finalIcon} size="lg" />
-            </ThemeIcon>
+            {data.itemImage ? (
+              <Avatar
+                src={getItemImageUrl(data.itemImage)}
+                size={'md'}
+                color={iconColor}
+                bg={'var(--mantine-color-default)'}
+                style={{
+                  border: '1px solid var(--mantine-color-default-border)',
+                }}
+              />
+            ) : (
+              <ThemeIcon color={iconColor} variant="light" size={38} radius="md">
+                <LibIcon icon={finalIcon} size="lg" />
+              </ThemeIcon>
+            )}
 
             <Stack gap={2} style={{ flex: 1 }}>
               {data.title && (

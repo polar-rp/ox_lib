@@ -16,4 +16,5 @@ export interface NotificationProps {
   id?: number | string;
   type?: 'error' | 'success' | 'warning' | 'info' | string;
   alignIcon?: 'top' | 'center';
+  itemImage?: string;
 }

@@ -23,9 +23,10 @@ export const debugCustomNotification = () => {
     {
       action: 'notify',
       data: {
-        title: 'Error',
+        itemImage: 'water',
+        title: 'Znalazłeś wodę',
         description: 'Notification description',
-        type: 'error',
+        type: 'success',
         position: "bottom"
       },
     },
